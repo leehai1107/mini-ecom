@@ -3,8 +3,17 @@ import { ShoppingCart, Tag, Mail, ArrowRight } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import VoucherBanner from '@/components/VoucherBanner'
 
+interface Product {
+  id: string 
+  name: string
+  price: number
+  image: string
+  description: string
+  slug: string
+}
+
 // Fetch products from admin API
-async function getProducts() {
+async function getProducts(): Promise<Product[]> {
   try {
     const res = await fetch('http://localhost:3000/api/admin/products', {
       cache: 'no-store'
@@ -105,7 +114,7 @@ export default async function Home() {
       <section id="products" className="container mx-auto px-4 py-16">
         <h2 className="text-4xl font-bold text-center mb-12">Featured Products</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map(product => (
+          {products.map((product: Product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
