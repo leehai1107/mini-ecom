@@ -1,7 +1,9 @@
 import { Metadata } from 'next'
 import Image from 'next/image'
 import OrderForm from '@/components/OrderForm'
-import { ArrowLeft } from 'lucide-react'
+import ProductCard from '@/components/ProductCard'
+import Header from '@/components/Header'
+import { ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
 // Fetch products from admin API
@@ -25,7 +27,7 @@ async function getProductBySlug(slug: string) {
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const product = await getProductBySlug(params.slug)
-  
+
   if (!product) {
     return {
       title: 'Product Not Found',
@@ -33,7 +35,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 
   return {
-    title: `${product.name} | Mini E-Commerce`,
+    title: `${product.name} | Wood Craft`,
     description: product.fullDescription,
     openGraph: {
       title: product.name,
@@ -45,14 +47,20 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await getProductBySlug(params.slug)
+  const allProducts = await getProducts()
+
+  // Get related products (exclude current product, limit to 4)
+  const relatedProducts = allProducts
+    .filter((p: any) => p.slug !== params.slug)
+    .slice(0, 4)
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-cream via-accent to-wood-light flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
-          <Link href="/" className="text-primary hover:underline">
-            Return to Home
+          <h1 className="text-3xl font-bold mb-4 text-dark">Không Tìm Thấy Sản Phẩm</h1>
+          <Link href="/" className="text-secondary hover:text-primary transition-colors font-semibold">
+            Quay Về Trang Chủ
           </Link>
         </div>
       </div>
@@ -60,22 +68,20 @@ export default async function ProductPage({ params }: { params: { slug: string }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-cream via-accent to-wood-light">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
-        <nav className="container mx-auto px-4 py-4">
-          <Link href="/" className="flex items-center gap-2 text-primary hover:text-blue-600 transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-semibold">Back to Store</span>
-          </Link>
-        </nav>
-      </header>
+      <Header />
 
       {/* Product Details */}
       <div className="container mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <Link href="/" className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors font-semibold mb-8">
+          <ArrowLeft className="w-5 h-5" />
+          Quay Lại Cửa Hàng
+        </Link>
+
+        <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto mb-16">
           {/* Product Image */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-primary/30 hover:border-primary transition-all">
             <div className="relative h-96 md:h-full min-h-[500px]">
               <Image
                 src={product.image}
@@ -90,23 +96,26 @@ export default async function ProductPage({ params }: { params: { slug: string }
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
-              <p className="text-xl text-gray-600 mb-6">{product.fullDescription}</p>
-              <div className="text-4xl font-bold text-primary mb-6">
+              <h1 className="text-5xl font-bold text-dark mb-4 tracking-tight">{product.name}</h1>
+              <p className="text-xl text-wood-dark mb-6 leading-relaxed">{product.fullDescription}</p>
+              <div className="text-5xl font-bold text-secondary mb-6 bg-gradient-to-r from-accent to-white p-4 rounded-xl inline-block shadow-lg">
                 {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
               </div>
             </div>
 
             {/* Features */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-2xl font-bold mb-4">Key Features</h2>
+            <div className="bg-gradient-to-br from-white to-cream rounded-2xl shadow-xl p-6 border-2 border-primary/20">
+              <h2 className="text-2xl font-bold mb-4 text-dark flex items-center gap-2">
+                <CheckCircle className="w-6 h-6 text-primary" />
+                Đặc Điểm Nổi Bật
+              </h2>
               <ul className="space-y-3">
                 {product.features.map((feature: string, index: number) => (
                   <li key={index} className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-wood-dark font-medium">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -116,6 +125,21 @@ export default async function ProductPage({ params }: { params: { slug: string }
             <OrderForm product={product} />
           </div>
         </div>
+
+        {/* Related Products */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-20">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-dark mb-4">Sản Phẩm Liên Quan</h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-primary via-gold to-primary mx-auto"></div>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {relatedProducts.map((relatedProduct: any) => (
+                <ProductCard key={relatedProduct.id} product={relatedProduct} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

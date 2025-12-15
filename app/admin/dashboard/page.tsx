@@ -32,11 +32,11 @@ export default function AdminDashboard() {
         fetch('/api/admin/vouchers'),
         fetch('/api/admin/orders'),
       ])
-      
+
       const productsData = await productsRes.json()
       const vouchersData = await vouchersRes.json()
       const ordersData = await ordersRes.json()
-      
+
       setProducts(productsData.products || [])
       setVouchers(vouchersData.vouchers || [])
       setOrders(ordersData.orders || [])
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
 
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('Are you sure you want to delete this product?')) return
-    
+
     try {
       await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' })
       fetchData()
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
 
   const handleDeleteVoucher = async (id: string) => {
     if (!confirm('Are you sure you want to delete this voucher?')) return
-    
+
     try {
       await fetch(`/api/admin/vouchers?id=${id}`, { method: 'DELETE' })
       fetchData()
@@ -73,23 +73,24 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-cream via-accent to-wood-light">
       {/* Header */}
-      <header className="bg-white shadow-md">
+      <header className="bg-gradient-to-r from-dark via-secondary to-dark text-cream shadow-2xl border-b-4 border-primary">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-primary">🎛️ Admin Dashboard</h1>
+            <span className="text-3xl">🎛️</span>
+            <h1 className="text-2xl font-bold text-primary">Admin Dashboard</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-gray-700 hover:text-primary transition-colors">
-              View Store
+            <Link href="/" className="text-cream hover:text-primary transition-colors font-medium">
+              Xem Website
             </Link>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+              className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-lg font-medium"
             >
               <LogOut className="w-4 h-4" />
-              Logout
+              Đăng Xuất
             </button>
           </div>
         </div>
@@ -98,119 +99,120 @@ export default function AdminDashboard() {
       <div className="container mx-auto px-4 py-8">
         {/* Stats */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-gradient-to-br from-white to-cream rounded-2xl shadow-xl p-6 border-2 border-primary/20 hover:border-primary transition-all hover:scale-105">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-gray-600 text-sm font-medium">Total Products</h3>
-              <Package className="w-8 h-8 text-blue-500" />
+              <h3 className="text-wood-dark text-sm font-bold">Tổng Sản Phẩm</h3>
+              <Package className="w-10 h-10 text-secondary" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">{products.length}</p>
+            <p className="text-4xl font-bold text-dark">{products.length}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-gradient-to-br from-white to-cream rounded-2xl shadow-xl p-6 border-2 border-primary/20 hover:border-primary transition-all hover:scale-105">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-gray-600 text-sm font-medium">Active Vouchers</h3>
-              <Tag className="w-8 h-8 text-purple-500" />
+              <h3 className="text-wood-dark text-sm font-bold">Mã Giảm Giá</h3>
+              <Tag className="w-10 h-10 text-primary" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">{vouchers.filter(v => v.active).length}</p>
+            <p className="text-4xl font-bold text-dark">{vouchers.filter(v => v.active).length}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-gradient-to-br from-white to-cream rounded-2xl shadow-xl p-6 border-2 border-primary/20 hover:border-primary transition-all hover:scale-105">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-gray-600 text-sm font-medium">Total Orders</h3>
-              <ShoppingBag className="w-8 h-8 text-green-500" />
+              <h3 className="text-wood-dark text-sm font-bold">Tổng Đơn Hàng</h3>
+              <ShoppingBag className="w-10 h-10 text-wood-medium" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">{orders.length}</p>
+            <p className="text-4xl font-bold text-dark">{orders.length}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-gradient-to-br from-white to-cream rounded-2xl shadow-xl p-6 border-2 border-primary/20 hover:border-primary transition-all hover:scale-105">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-gray-600 text-sm font-medium">Revenue</h3>
-              <BarChart className="w-8 h-8 text-orange-500" />
+              <h3 className="text-wood-dark text-sm font-bold">Doanh Thu</h3>
+              <BarChart className="w-10 h-10 text-gold" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-dark">
               {orders.reduce((sum, o) => sum + (o.finalPrice || 0), 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
             </p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="border-b border-gray-200">
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-2 border-primary/20">
+          <div className="border-b-2 border-primary/20 bg-gradient-to-r from-accent to-cream">
             <nav className="flex">
               <button
                 onClick={() => setActiveTab('products')}
-                className={`px-6 py-4 font-semibold transition-colors ${
-                  activeTab === 'products'
-                    ? 'text-primary border-b-2 border-primary'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`px-6 py-4 font-bold transition-all ${activeTab === 'products'
+                  ? 'text-dark border-b-4 border-primary bg-white/50'
+                  : 'text-wood-dark hover:text-dark hover:bg-white/30'
+                  }`}
               >
                 <Package className="w-5 h-5 inline mr-2" />
-                Products
+                Sản Phẩm
               </button>
               <button
                 onClick={() => setActiveTab('vouchers')}
-                className={`px-6 py-4 font-semibold transition-colors ${
-                  activeTab === 'vouchers'
-                    ? 'text-primary border-b-2 border-primary'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`px-6 py-4 font-bold transition-all ${activeTab === 'vouchers'
+                  ? 'text-dark border-b-4 border-primary bg-white/50'
+                  : 'text-wood-dark hover:text-dark hover:bg-white/30'
+                  }`}
               >
                 <Tag className="w-5 h-5 inline mr-2" />
-                Vouchers
+                Mã Giảm Giá
               </button>
               <button
                 onClick={() => setActiveTab('orders')}
-                className={`px-6 py-4 font-semibold transition-colors ${
-                  activeTab === 'orders'
-                    ? 'text-primary border-b-2 border-primary'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`px-6 py-4 font-bold transition-all ${activeTab === 'orders'
+                  ? 'text-dark border-b-4 border-primary bg-white/50'
+                  : 'text-wood-dark hover:text-dark hover:bg-white/30'
+                  }`}
               >
                 <ShoppingBag className="w-5 h-5 inline mr-2" />
-                Orders
+                Đơn Hàng
               </button>
             </nav>
           </div>
 
-          <div className="p-6">
+          <div className="p-8">
             {/* Products Tab */}
             {activeTab === 'products' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold">Products</h2>
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-3xl font-bold text-dark">Quản Lý Sản Phẩm</h2>
                   <button
                     onClick={() => {
                       setEditingProduct(null)
                       setShowProductModal(true)
                     }}
-                    className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+                    className="bg-gradient-to-r from-secondary to-wood-dark text-cream px-6 py-3 rounded-lg hover:from-dark hover:to-secondary transition-all shadow-lg hover:shadow-xl flex items-center gap-2 font-bold"
                   >
                     <Plus className="w-5 h-5" />
-                    Add Product
+                    Thêm Sản Phẩm
                   </button>
                 </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="space-y-4">
                   {products.map((product) => (
-                    <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
-                      <img src={product.image} alt={product.name} className="w-full h-48 object-cover rounded-lg mb-4" />
-                      <h3 className="font-bold text-lg mb-2">{product.name}</h3>
-                      <p className="text-gray-600 text-sm mb-2">{product.description}</p>
-                      <p className="text-primary font-bold text-xl mb-4">{product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
-                      <div className="flex gap-2">
+                    <div key={product.id} className="border-2 border-primary/20 rounded-xl p-5 hover:shadow-2xl transition-all bg-gradient-to-br from-white to-cream hover:border-primary flex gap-6">
+                      <img src={product.image} alt={product.name} className="w-48 h-32 object-cover rounded-lg shadow-md flex-shrink-0" />
+                      <div className="flex-1 flex flex-col justify-between">
+                        <div>
+                          <h3 className="font-bold text-xl mb-2 text-dark">{product.name}</h3>
+                          <p className="text-wood-dark text-sm mb-2 line-clamp-2">{product.description}</p>
+                          <p className="text-secondary font-bold text-xl">{product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2 justify-center">
                         <button
                           onClick={() => {
                             setEditingProduct(product)
                             setShowProductModal(true)
                           }}
-                          className="flex-1 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                          className="bg-gradient-to-r from-primary to-gold text-dark px-5 py-2 rounded-lg hover:from-gold hover:to-primary transition-all shadow-md flex items-center justify-center gap-2 font-semibold whitespace-nowrap"
                         >
                           <Edit className="w-4 h-4" />
-                          Edit
+                          Sửa
                         </button>
                         <button
                           onClick={() => handleDeleteProduct(product.id)}
-                          className="flex-1 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                          className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-md flex items-center justify-center gap-2 font-semibold whitespace-nowrap"
                         >
                           <Trash2 className="w-4 h-4" />
-                          Delete
+                          Xóa
                         </button>
                       </div>
                     </div>
@@ -222,35 +224,35 @@ export default function AdminDashboard() {
             {/* Vouchers Tab */}
             {activeTab === 'vouchers' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold">Vouchers</h2>
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-3xl font-bold text-dark">Quản Lý Mã Giảm Giá</h2>
                   <button
                     onClick={() => {
                       setEditingVoucher(null)
                       setShowVoucherModal(true)
                     }}
-                    className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+                    className="bg-gradient-to-r from-secondary to-wood-dark text-cream px-6 py-3 rounded-lg hover:from-dark hover:to-secondary transition-all shadow-lg hover:shadow-xl flex items-center gap-2 font-bold"
                   >
                     <Plus className="w-5 h-5" />
-                    Add Voucher
+                    Thêm Mã
                   </button>
                 </div>
                 <div className="space-y-4">
                   {vouchers.map((voucher) => (
-                    <div key={voucher.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                    <div key={voucher.id} className="border-2 border-primary/20 rounded-xl p-6 hover:shadow-xl transition-all bg-gradient-to-br from-white to-cream hover:border-primary">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center gap-4 mb-2">
-                            <span className="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg font-mono font-bold text-lg">
+                          <div className="flex items-center gap-4 mb-3">
+                            <span className="bg-gradient-to-r from-primary to-gold text-dark px-5 py-2 rounded-lg font-mono font-bold text-xl shadow-md">
                               {voucher.code}
                             </span>
-                            <span className={`px-3 py-1 rounded-full text-sm ${voucher.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                              {voucher.active ? 'Active' : 'Inactive'}
+                            <span className={`px-4 py-1 rounded-full text-sm font-semibold ${voucher.active ? 'bg-green-100 text-green-800 border-2 border-green-300' : 'bg-gray-100 text-gray-800 border-2 border-gray-300'}`}>
+                              {voucher.active ? 'Đang Hoạt Động' : 'Đã Tắt'}
                             </span>
                           </div>
-                          <p className="text-gray-600 mb-1">{voucher.description}</p>
-                          <p className="text-primary font-semibold">
-                            {voucher.type === 'percentage' ? `${voucher.discount}% OFF` : voucher.type === 'shipping' ? 'FREE SHIPPING' : `${voucher.discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} OFF`}
+                          <p className="text-wood-dark mb-2 font-medium">{voucher.description}</p>
+                          <p className="text-secondary font-bold text-lg">
+                            {voucher.type === 'percentage' ? `Giảm ${voucher.discount}%` : voucher.type === 'shipping' ? 'MIỄN PHÍ VẬN CHUYỂN' : `Giảm ${voucher.discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}`}
                           </p>
                         </div>
                         <div className="flex gap-2">
@@ -259,17 +261,17 @@ export default function AdminDashboard() {
                               setEditingVoucher(voucher)
                               setShowVoucherModal(true)
                             }}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors flex items-center gap-2"
+                            className="bg-gradient-to-r from-primary to-gold text-dark px-5 py-2 rounded-lg hover:from-gold hover:to-primary transition-all shadow-md flex items-center gap-2 font-semibold"
                           >
                             <Edit className="w-4 h-4" />
-                            Edit
+                            Sửa
                           </button>
                           <button
                             onClick={() => handleDeleteVoucher(voucher.id)}
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors flex items-center gap-2"
+                            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-md flex items-center gap-2 font-semibold"
                           >
                             <Trash2 className="w-4 h-4" />
-                            Delete
+                            Xóa
                           </button>
                         </div>
                       </div>
@@ -282,37 +284,37 @@ export default function AdminDashboard() {
             {/* Orders Tab */}
             {activeTab === 'orders' && (
               <div>
-                <h2 className="text-2xl font-bold mb-6">Orders</h2>
-                <div className="overflow-x-auto">
+                <h2 className="text-3xl font-bold mb-8 text-dark">Quản Lý Đơn Hàng</h2>
+                <div className="overflow-x-auto rounded-xl border-2 border-primary/20 shadow-lg">
                   <table className="w-full">
-                    <thead className="bg-gray-50 border-b-2 border-gray-200">
+                    <thead className="bg-gradient-to-r from-accent to-cream border-b-2 border-primary/30">
                       <tr>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Order ID</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Customer</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Product</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Total</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-dark">Mã Đơn</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-dark">Khách Hàng</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-dark">Sản Phẩm</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-dark">Tổng Tiền</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-dark">Ngày Đặt</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-primary/10 bg-white">
                       {orders.map((order, idx) => (
-                        <tr key={idx} className="hover:bg-gray-50">
-                          <td className="px-4 py-4 text-sm font-mono">{order.orderId || `ORD-${idx}`}</td>
-                          <td className="px-4 py-4 text-sm">
-                            <div className="font-medium">{order.name}</div>
-                            <div className="text-gray-600">{order.email}</div>
+                        <tr key={idx} className="hover:bg-accent/30 transition-colors">
+                          <td className="px-6 py-4 text-sm font-mono font-semibold text-secondary">{order.orderId || `ORD-${idx}`}</td>
+                          <td className="px-6 py-4 text-sm">
+                            <div className="font-semibold text-dark">{order.name}</div>
+                            <div className="text-wood-dark text-xs">{order.email}</div>
                           </td>
-                          <td className="px-4 py-4 text-sm">{order.productName}</td>
-                          <td className="px-4 py-4 text-sm font-bold text-primary">{order.finalPrice?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-                          <td className="px-4 py-4 text-sm text-gray-600">
-                            {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'}
+                          <td className="px-6 py-4 text-sm font-medium text-dark">{order.productName}</td>
+                          <td className="px-6 py-4 text-sm font-bold text-secondary">{order.finalPrice?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                          <td className="px-6 py-4 text-sm text-wood-dark">
+                            {order.orderDate ? new Date(order.orderDate).toLocaleDateString('vi-VN') : 'N/A'}
                           </td>
                         </tr>
                       ))}
                       {orders.length === 0 && (
                         <tr>
-                          <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                            No orders yet
+                          <td colSpan={5} className="px-6 py-12 text-center text-wood-dark font-medium">
+                            Chưa có đơn hàng nào
                           </td>
                         </tr>
                       )}
@@ -336,7 +338,7 @@ export default function AdminDashboard() {
           }}
         />
       )}
-      
+
       {showVoucherModal && (
         <VoucherModal
           voucher={editingVoucher}
@@ -365,7 +367,7 @@ function ProductModal({ product, onClose, onSave }: any) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const method = product ? 'PUT' : 'POST'
       await fetch('/api/admin/products', {
@@ -502,7 +504,7 @@ function VoucherModal({ voucher, onClose, onSave }: any) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const method = voucher ? 'PUT' : 'POST'
       await fetch('/api/admin/vouchers', {

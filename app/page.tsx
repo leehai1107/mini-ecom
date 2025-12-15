@@ -1,10 +1,11 @@
 import Link from 'next/link'
-import { ShoppingCart, Tag, Mail, ArrowRight } from 'lucide-react'
+import { ShoppingCart, Tag, Mail, ArrowRight, Truck, Shield, Award } from 'lucide-react'
 import ProductCard from '@/components/ProductCard'
 import VoucherBanner from '@/components/VoucherBanner'
+import Header from '@/components/Header'
 
 interface Product {
-  id: string 
+  id: string
   name: string
   price: number
   image: string
@@ -29,52 +30,36 @@ async function getProducts(): Promise<Product[]> {
 export default async function Home() {
   const products = await getProducts()
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-cream via-accent to-wood-light">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
-        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-primary">
-            🛍️ Mini Store
-          </Link>
-          <div className="flex items-center gap-6">
-            <Link href="#products" className="text-gray-700 hover:text-primary transition-colors">
-              Products
-            </Link>
-            <Link href="#vouchers" className="text-gray-700 hover:text-primary transition-colors flex items-center gap-2">
-              <Tag className="w-4 h-4" />
-              Vouchers
-            </Link>
-            <Link href="#contact" className="text-gray-700 hover:text-primary transition-colors flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              Contact
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <Header />
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-          Premium Products,
-          <span className="text-primary"> Unbeatable Prices</span>
-        </h1>
-        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Discover our curated collection of high-quality products. Use exclusive voucher codes for amazing discounts!
-        </p>
-        <div className="flex gap-4 justify-center">
-          <Link 
-            href="#products" 
-            className="bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors flex items-center gap-2"
-          >
-            Shop Now
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-          <Link 
-            href="#vouchers" 
-            className="bg-white text-primary border-2 border-primary px-8 py-4 rounded-lg font-semibold hover:bg-primary hover:text-white transition-colors"
-          >
-            Get Vouchers
-          </Link>
+      <section className="container mx-auto px-4 py-20 text-center relative">
+        <div className="absolute inset-0 wood-grain opacity-10"></div>
+        <div className="relative z-10">
+          <h1 className="text-5xl md:text-7xl font-bold text-dark mb-6 tracking-tight">
+            Nghệ Thuật Gỗ
+            <span className="text-secondary block mt-2">Tinh Hoa Thủ Công</span>
+          </h1>
+          <p className="text-xl text-wood-dark mb-8 max-w-2xl mx-auto leading-relaxed">
+            Khám phá bộ sưu tập đồ gỗ thủ công cao cấp. Mỗi sản phẩm là một tác phẩm nghệ thuật độc đáo, mang đến vẻ đẹp tự nhiên cho không gian của bạn.
+          </p>
+          <div className="flex gap-4 justify-center flex-wrap">
+            <Link
+              href="#products"
+              className="bg-gradient-to-r from-secondary to-wood-dark text-cream px-8 py-4 rounded-lg font-semibold hover:from-dark hover:to-secondary transition-all shadow-xl hover:shadow-2xl hover:scale-105 flex items-center gap-2"
+            >
+              Xem Sản Phẩm
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="#vouchers"
+              className="bg-primary text-dark border-2 border-secondary px-8 py-4 rounded-lg font-semibold hover:bg-gold transition-all shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              Nhận Ưu Đãi
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -84,35 +69,38 @@ export default async function Home() {
       </section>
 
       {/* Features */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-xl shadow-md text-center">
-            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ShoppingCart className="w-8 h-8 text-primary" />
+          <div className="bg-gradient-to-br from-cream to-white p-8 rounded-2xl shadow-xl text-center border-2 border-primary/20 hover:border-primary transition-all hover:scale-105">
+            <div className="bg-gradient-to-br from-primary to-gold w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Truck className="w-10 h-10 text-dark" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Fast Delivery</h3>
-            <p className="text-gray-600">Free shipping on orders over 2,000,000₫</p>
+            <h3 className="text-2xl font-bold mb-3 text-dark">Giao Hàng Nhanh</h3>
+            <p className="text-wood-dark">Miễn phí vận chuyển cho đơn hàng trên 2,000,000₫</p>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-md text-center">
-            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Tag className="w-8 h-8 text-primary" />
+          <div className="bg-gradient-to-br from-cream to-white p-8 rounded-2xl shadow-xl text-center border-2 border-primary/20 hover:border-primary transition-all hover:scale-105">
+            <div className="bg-gradient-to-br from-primary to-gold w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Shield className="w-10 h-10 text-dark" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Exclusive Vouchers</h3>
-            <p className="text-gray-600">Save more with special discount codes</p>
+            <h3 className="text-2xl font-bold mb-3 text-dark">Cam Kết Chất Lượng</h3>
+            <p className="text-wood-dark">100% gỗ tự nhiên cao cấp, bảo hành dài hạn</p>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-md text-center">
-            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-8 h-8 text-primary" />
+          <div className="bg-gradient-to-br from-cream to-white p-8 rounded-2xl shadow-xl text-center border-2 border-primary/20 hover:border-primary transition-all hover:scale-105">
+            <div className="bg-gradient-to-br from-primary to-gold w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Award className="w-10 h-10 text-dark" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Email Notifications</h3>
-            <p className="text-gray-600">Get order confirmations instantly</p>
+            <h3 className="text-2xl font-bold mb-3 text-dark">Thủ Công Tinh Xảo</h3>
+            <p className="text-wood-dark">Được chế tác bởi nghệ nhân lành nghề</p>
           </div>
         </div>
       </section>
 
       {/* Products Grid */}
       <section id="products" className="container mx-auto px-4 py-16">
-        <h2 className="text-4xl font-bold text-center mb-12">Featured Products</h2>
+        <div className="text-center mb-12">
+          <h2 className="text-5xl font-bold text-dark mb-4">Sản Phẩm Nổi Bật</h2>
+          <div className="w-24 h-1 bg-gradient-to-r from-primary via-gold to-primary mx-auto"></div>
+        </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {products.map((product: Product) => (
             <ProductCard key={product.id} product={product} />
@@ -121,22 +109,29 @@ export default async function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-20">
-        <div className="container mx-auto px-4 text-center">
-          <h3 className="text-2xl font-bold mb-4">Mini E-Commerce Store</h3>
-          <p className="text-gray-400 mb-6">Quality products, exceptional service</p>
-          <div className="flex justify-center gap-6">
-            <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-              Privacy Policy
+      <footer className="bg-gradient-to-br from-dark via-secondary to-dark text-cream py-16 mt-20 border-t-4 border-primary">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="text-4xl">🌳</span>
+              <h3 className="text-3xl font-bold text-primary">Wood Craft</h3>
+            </div>
+            <p className="text-accent text-lg mb-6">Nghệ thuật gỗ - Tinh hoa thủ công</p>
+          </div>
+          <div className="flex justify-center gap-8 mb-8 flex-wrap">
+            <Link href="#" className="text-accent hover:text-primary transition-colors font-medium">
+              Chính Sách Bảo Mật
             </Link>
-            <Link href="#" className="text-gray-400 hover:text-white transition-colors">
-              Terms of Service
+            <Link href="#" className="text-accent hover:text-primary transition-colors font-medium">
+              Điều Khoản Dịch Vụ
             </Link>
-            <Link href="#contact" className="text-gray-400 hover:text-white transition-colors">
-              Contact
+            <Link href="#contact" className="text-accent hover:text-primary transition-colors font-medium">
+              Liên Hệ
             </Link>
           </div>
-          <p className="text-gray-500 mt-8">© 2025 Mini E-Commerce. All rights reserved.</p>
+          <div className="text-center text-accent/70">
+            <p>© 2025 Wood Craft. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

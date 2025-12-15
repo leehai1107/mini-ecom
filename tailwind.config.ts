@@ -9,8 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#0070f3',
-        secondary: '#7928ca',
+        // Wood-themed color palette
+        primary: '#D4A574', // Warm golden wood
+        secondary: '#8B4513', // Saddle brown
+        accent: '#F4E4C1', // Light beige/cream
+        dark: '#2C1810', // Dark wood/espresso
+        'wood-light': '#DEB887', // Burlywood
+        'wood-medium': '#A0826D', // Medium wood
+        'wood-dark': '#654321', // Dark brown
+        'gold': '#DAA520', // Goldenrod
+        'cream': '#FFF8DC', // Cornsilk
       },
     },
   },
