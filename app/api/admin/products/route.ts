@@ -14,8 +14,13 @@ async function fetchProductsFromSheet() {
         description: 'High-quality sound with active noise cancellation',
         fullDescription: 'Experience audio like never before with our Premium Wireless Headphones.',
         price: 299.99,
+        sellPrice: 249.99,
         image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800',
-        slug: 'premium-wireless-headphones',
+        images: [
+          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800',
+          'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800',
+          'https://images.unsplash.com/photo-1545127398-14699f92334b?w=800'
+        ],
         features: ['Active Noise Cancellation', '30-hour battery life', 'Premium leather ear cushions']
       },
       {
@@ -24,8 +29,13 @@ async function fetchProductsFromSheet() {
         description: 'Track your fitness and stay connected',
         fullDescription: 'Stay connected and healthy with the Smart Watch Pro.',
         price: 399.99,
+        sellPrice: 349.99,
         image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
-        slug: 'smart-watch-pro',
+        images: [
+          'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
+          'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800',
+          'https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=800'
+        ],
         features: ['Heart rate monitoring', 'GPS tracking', 'Water-resistant (50m)']
       },
       {
@@ -34,8 +44,12 @@ async function fetchProductsFromSheet() {
         description: 'Handcrafted genuine leather wallet',
         fullDescription: 'Crafted from premium full-grain leather.',
         price: 79.99,
+        sellPrice: 59.99,
         image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=800',
-        slug: 'minimalist-leather-wallet',
+        images: [
+          'https://images.unsplash.com/photo-1627123424574-724758594e93?w=800',
+          'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800'
+        ],
         features: ['Genuine full-grain leather', 'RFID-blocking technology', 'Slim design']
       },
       {
@@ -44,8 +58,13 @@ async function fetchProductsFromSheet() {
         description: 'Waterproof speaker with 20-hour battery life',
         fullDescription: 'Take your music anywhere.',
         price: 149.99,
+        sellPrice: 129.99,
         image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800',
-        slug: 'portable-bluetooth-speaker',
+        images: [
+          'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800',
+          'https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=800',
+          'https://images.unsplash.com/photo-1545127398-14699f92334b?w=800'
+        ],
         features: ['IPX7 waterproof rating', '20-hour battery life', '360-degree sound']
       }
     ]
@@ -60,16 +79,25 @@ async function fetchProductsFromSheet() {
     const data = await response.json()
     
     // Parse the data if it's in the expected format
-    const products = Array.isArray(data.data) ? data.data.map((row: any) => ({
-      id: row.id || row.ID || '',
-      name: row.name || row.Name || '',
-      description: row.description || row.Description || '',
-      fullDescription: row.fullDescription || row.FullDescription || '',
-      price: parseFloat(row.price || row.Price || '0'),
-      image: row.image || row.Image || '',
-      slug: row.slug || row.Slug || '',
-      features: typeof row.features === 'string' ? JSON.parse(row.features) : (row.features || [])
-    })) : []
+    const products = Array.isArray(data.data) ? data.data.map((row: any) => {
+      // Parse images - support both single image and comma-separated multiple images
+      const imageString = row.image || row.Image || ''
+      const images = imageString.includes(',') 
+        ? imageString.split(',').map((img: string) => img.trim()).filter(Boolean)
+        : [imageString].filter(Boolean)
+      
+      return {
+        id: row.id || row.ID || '',
+        name: row.name || row.Name || '',
+        description: row.description || row.Description || '',
+        fullDescription: row.fullDescription || row.FullDescription || '',
+        price: parseFloat(row.price || row.Price || '0'),
+        sellPrice: parseFloat(row.sellPrice || row.SellPrice || row.price || row.Price || '0'),
+        image: images[0] || '', // Main image for backward compatibility
+        images: images, // Array of all images
+        features: typeof row.features === 'string' ? JSON.parse(row.features) : (row.features || [])
+      }
+    }) : []
     
     return products
   } catch (error) {

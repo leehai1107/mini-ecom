@@ -1,10 +1,17 @@
 'use client'
 
-import { Tag } from 'lucide-react'
+import { Tag, Copy, Check } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export default function VoucherBanner() {
   const [vouchers, setVouchers] = useState<any[]>([])
+  const [copiedCode, setCopiedCode] = useState<string | null>(null)
+
+  const copyToClipboard = (code: string) => {
+    navigator.clipboard.writeText(code)
+    setCopiedCode(code)
+    setTimeout(() => setCopiedCode(null), 2000)
+  }
 
   useEffect(() => {
     fetch('/api/admin/vouchers')
@@ -34,9 +41,27 @@ export default function VoucherBanner() {
               <div className="text-2xl font-bold mb-4 text-gold">
                 {voucher.type === 'percentage' ? `Giảm ${voucher.discount}%` : voucher.type === 'shipping' ? 'Miễn Phí Vận Chuyển' : `Giảm ${voucher.discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}`}
               </div>
-              <div className="bg-gradient-to-r from-primary to-gold text-dark px-4 py-3 rounded-lg font-mono font-bold text-center shadow-lg">
-                {voucher.code}
+              <div className="flex gap-2">
+                <div className="flex-1 bg-gradient-to-r from-primary to-gold text-dark px-4 py-3 rounded-lg font-mono font-bold text-center shadow-lg">
+                  {voucher.code}
+                </div>
+                <button
+                  onClick={() => copyToClipboard(voucher.code)}
+                  className="bg-gradient-to-r from-primary to-gold text-dark px-4 py-3 rounded-lg hover:from-gold hover:to-primary transition-all shadow-lg flex items-center justify-center"
+                  title="Sao chép mã"
+                >
+                  {copiedCode === voucher.code ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    <Copy className="w-5 h-5" />
+                  )}
+                </button>
               </div>
+              {copiedCode === voucher.code && (
+                <div className="text-xs text-gold mt-2 text-center font-semibold">
+                  ✅ Đã sao chép!
+                </div>
+              )}
             </div>
           ))
         )}

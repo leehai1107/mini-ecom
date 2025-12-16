@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ShoppingBag, Tag, Package, LogOut, Plus, Edit, Trash2, BarChart } from 'lucide-react'
+import Image from 'next/image'
+import { ShoppingBag, Tag, Package, LogOut, Plus, Edit, Trash2, BarChart, Images as ImagesIcon, Loader2 } from 'lucide-react'
+import { getGoogleDriveThumbnail } from '@/lib/utils'
 
 export default function AdminDashboard() {
   const router = useRouter()
@@ -15,6 +17,9 @@ export default function AdminDashboard() {
   const [showVoucherModal, setShowVoucherModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState<any>(null)
   const [editingVoucher, setEditingVoucher] = useState<any>(null)
+  const [isLoadingData, setIsLoadingData] = useState(true)
+  const [isDeletingProduct, setIsDeletingProduct] = useState<string | null>(null)
+  const [isDeletingVoucher, setIsDeletingVoucher] = useState<string | null>(null)
 
   useEffect(() => {
     const isAuth = localStorage.getItem('adminAuth')
@@ -26,6 +31,7 @@ export default function AdminDashboard() {
   }, [])
 
   const fetchData = async () => {
+    setIsLoadingData(true)
     try {
       const [productsRes, vouchersRes, ordersRes] = await Promise.all([
         fetch('/api/admin/products'),
@@ -42,6 +48,9 @@ export default function AdminDashboard() {
       setOrders(ordersData.orders || [])
     } catch (error) {
       console.error('Failed to fetch data:', error)
+      alert('Không thể tải dữ liệu. Vui lòng thử lại.')
+    } finally {
+      setIsLoadingData(false)
     }
   }
 
@@ -53,22 +62,28 @@ export default function AdminDashboard() {
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('Are you sure you want to delete this product?')) return
 
+    setIsDeletingProduct(id)
     try {
       await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' })
       fetchData()
     } catch (error) {
       alert('Failed to delete product')
+    } finally {
+      setIsDeletingProduct(null)
     }
   }
 
   const handleDeleteVoucher = async (id: string) => {
     if (!confirm('Are you sure you want to delete this voucher?')) return
 
+    setIsDeletingVoucher(id)
     try {
       await fetch(`/api/admin/vouchers?id=${id}`, { method: 'DELETE' })
       fetchData()
     } catch (error) {
       alert('Failed to delete voucher')
+    } finally {
+      setIsDeletingVoucher(null)
     }
   }
 
@@ -97,6 +112,16 @@ export default function AdminDashboard() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Loading Overlay */}
+        {isLoadingData && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div className="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4">
+              <Loader2 className="w-12 h-12 animate-spin text-primary" />
+              <p className="text-lg font-semibold text-dark">Đang tải dữ liệu...</p>
+            </div>
+          </div>
+        )}
+
         {/* Stats */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <div className="bg-gradient-to-br from-white to-cream rounded-2xl shadow-xl p-6 border-2 border-primary/20 hover:border-primary transition-all hover:scale-105">
@@ -186,14 +211,45 @@ export default function AdminDashboard() {
                   </button>
                 </div>
                 <div className="space-y-4">
-                  {products.map((product) => (
+                  {products.map((product) => {
+                    const productImages = product.images || [product.image]
+                    const hasMultipleImages = productImages.length > 1
+                    
+                    return (
                     <div key={product.id} className="border-2 border-primary/20 rounded-xl p-5 hover:shadow-2xl transition-all bg-gradient-to-br from-white to-cream hover:border-primary flex gap-6">
-                      <img src={product.image} alt={product.name} className="w-48 h-32 object-cover rounded-lg shadow-md flex-shrink-0" />
+                      <div className="w-48 h-32 rounded-lg shadow-md flex-shrink-0 relative overflow-hidden">
+                        <Image 
+                          src={getGoogleDriveThumbnail(productImages[0])} 
+                          alt={product.name} 
+                          fill
+                          className="object-cover"
+                        />
+                        {hasMultipleImages && (
+                          <div className="absolute top-2 left-2 bg-dark/80 text-cream px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                            <ImagesIcon className="w-3 h-3" />
+                            {productImages.length}
+                          </div>
+                        )}
+                      </div>
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
                           <h3 className="font-bold text-xl mb-2 text-dark">{product.name}</h3>
                           <p className="text-wood-dark text-sm mb-2 line-clamp-2">{product.description}</p>
-                          <p className="text-secondary font-bold text-xl">{product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
+                          <div className="flex items-center gap-3">
+                            {product.price > product.sellPrice && (
+                              <>
+                                <span className="text-wood-dark text-sm line-through">
+                                  {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                                </span>
+                                <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">
+                                  -{Math.round(((product.price - product.sellPrice) / product.price) * 100)}%
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <p className="text-secondary font-bold text-xl mt-1">
+                            {(product.sellPrice || product.price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                          </p>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 justify-center">
@@ -209,14 +265,19 @@ export default function AdminDashboard() {
                         </button>
                         <button
                           onClick={() => handleDeleteProduct(product.id)}
-                          className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-md flex items-center justify-center gap-2 font-semibold whitespace-nowrap"
+                          disabled={isDeletingProduct === product.id}
+                          className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-md flex items-center justify-center gap-2 font-semibold whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <Trash2 className="w-4 h-4" />
-                          Xóa
+                          {isDeletingProduct === product.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
+                          {isDeletingProduct === product.id ? 'Đang xóa...' : 'Xóa'}
                         </button>
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               </div>
             )}
@@ -268,10 +329,15 @@ export default function AdminDashboard() {
                           </button>
                           <button
                             onClick={() => handleDeleteVoucher(voucher.id)}
-                            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-md flex items-center gap-2 font-semibold"
+                            disabled={isDeletingVoucher === voucher.id}
+                            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-md flex items-center gap-2 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            <Trash2 className="w-4 h-4" />
-                            Xóa
+                            {isDeletingVoucher === voucher.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                            {isDeletingVoucher === voucher.id ? 'Đang xóa...' : 'Xóa'}
                           </button>
                         </div>
                       </div>
@@ -360,14 +426,25 @@ function ProductModal({ product, onClose, onSave }: any) {
     description: '',
     fullDescription: '',
     price: 0,
+    sellPrice: 0,
     image: '',
+    images: [],
     features: []
   })
   const [featureInput, setFeatureInput] = useState('')
+  const [imageInput, setImageInput] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validate có ít nhất 1 ảnh
+    if (!formData.images || formData.images.length === 0) {
+      alert('Vui lòng thêm ít nhất 1 ảnh cho sản phẩm')
+      return
+    }
+
+    setIsSaving(true)
     try {
       const method = product ? 'PUT' : 'POST'
       await fetch('/api/admin/products', {
@@ -378,6 +455,8 @@ function ProductModal({ product, onClose, onSave }: any) {
       onSave()
     } catch (error) {
       alert('Failed to save product')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -395,6 +474,27 @@ function ProductModal({ product, onClose, onSave }: any) {
     setFormData({
       ...formData,
       features: formData.features.filter((_: any, i: number) => i !== index)
+    })
+  }
+
+  const addImage = () => {
+    if (imageInput.trim()) {
+      const newImages = [...(formData.images || []), imageInput.trim()]
+      setFormData({
+        ...formData,
+        images: newImages,
+        image: newImages[0] // Set first image as main image
+      })
+      setImageInput('')
+    }
+  }
+
+  const removeImage = (index: number) => {
+    const newImages = (formData.images || []).filter((_: any, i: number) => i !== index)
+    setFormData({
+      ...formData,
+      images: newImages,
+      image: newImages[0] || '' // Update main image
     })
   }
 
@@ -433,7 +533,7 @@ function ProductModal({ product, onClose, onSave }: any) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Price (VND)</label>
+            <label className="block text-sm font-medium mb-2">Price (VND) - Giá gốc</label>
             <input
               type="number"
               step="0.01"
@@ -444,14 +544,65 @@ function ProductModal({ product, onClose, onSave }: any) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Image URL</label>
+            <label className="block text-sm font-medium mb-2">Sell Price (VND) - Giá bán</label>
+            <div className="text-xs text-gray-500 mb-2">
+              💡 Nêu khác giá gốc sẽ hiển thị badge giảm giá
+            </div>
             <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              type="number"
+              step="0.01"
+              value={formData.sellPrice}
+              onChange={(e) => setFormData({ ...formData, sellPrice: parseFloat(e.target.value) })}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
               required
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Images (Google Drive URLs hoặc URLs trực tiếp)</label>
+            <div className="text-xs text-gray-500 mb-2">
+              💡 Tip: Có thể thêm nhiều ảnh. Ảnh đầu tiên sẽ là ảnh chính.
+            </div>
+            <div className="flex gap-2 mb-2">
+              <input
+                type="url"
+                value={imageInput}
+                onChange={(e) => setImageInput(e.target.value)}
+                className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                placeholder="Nhập URL ảnh"
+              />
+              <button type="button" onClick={addImage} className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 whitespace-nowrap">
+                Thêm Ảnh
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {(formData.images || []).map((img: string, idx: number) => (
+                <div key={idx} className="relative group">
+                  <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-300">
+                    <Image
+                      src={getGoogleDriveThumbnail(img)}
+                      alt={`Image ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                    {idx === 0 && (
+                      <div className="absolute top-1 left-1 bg-primary text-white px-2 py-0.5 rounded text-xs font-bold">
+                        Chính
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeImage(idx)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            {(formData.images || []).length === 0 && (
+              <p className="text-sm text-red-500 mt-2">⚠️ Vui lòng thêm ít nhất 1 ảnh</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Features</label>
@@ -479,10 +630,26 @@ function ProductModal({ product, onClose, onSave }: any) {
             </div>
           </div>
           <div className="flex gap-4 pt-4">
-            <button type="submit" className="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-blue-600 transition-colors">
-              Save Product
+            <button 
+              type="submit" 
+              disabled={isSaving}
+              className="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Đang lưu...
+                </>
+              ) : (
+                'Save Product'
+              )}
             </button>
-            <button type="button" onClick={onClose} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              disabled={isSaving}
+              className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Cancel
             </button>
           </div>
@@ -501,10 +668,12 @@ function VoucherModal({ voucher, onClose, onSave }: any) {
     description: '',
     active: true
   })
+  const [isSaving, setIsSaving] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    setIsSaving(true)
     try {
       const method = voucher ? 'PUT' : 'POST'
       await fetch('/api/admin/vouchers', {
@@ -515,6 +684,8 @@ function VoucherModal({ voucher, onClose, onSave }: any) {
       onSave()
     } catch (error) {
       alert('Failed to save voucher')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -581,10 +752,26 @@ function VoucherModal({ voucher, onClose, onSave }: any) {
             <label htmlFor="active" className="text-sm font-medium">Active</label>
           </div>
           <div className="flex gap-4 pt-4">
-            <button type="submit" className="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-blue-600 transition-colors">
-              Save Voucher
+            <button 
+              type="submit" 
+              disabled={isSaving}
+              className="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Đang lưu...
+                </>
+              ) : (
+                'Save Voucher'
+              )}
             </button>
-            <button type="button" onClick={onClose} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              disabled={isSaving}
+              className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Cancel
             </button>
           </div>

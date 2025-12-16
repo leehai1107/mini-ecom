@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import Image from 'next/image'
 import OrderForm from '@/components/OrderForm'
 import ProductCard from '@/components/ProductCard'
+import ImageGallery from '@/components/ImageGallery'
 import Header from '@/components/Header'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
@@ -80,18 +81,11 @@ export default async function ProductPage({ params }: { params: { slug: string }
         </Link>
 
         <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto mb-16">
-          {/* Product Image */}
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-primary/30 hover:border-primary transition-all">
-            <div className="relative h-96 md:h-full min-h-[500px]">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-          </div>
+          {/* Product Image Gallery */}
+          <ImageGallery 
+            images={product.images || [product.image]} 
+            productName={product.name} 
+          />
 
           {/* Product Info */}
           <div className="space-y-6">

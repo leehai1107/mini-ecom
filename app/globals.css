@@ -28,6 +28,11 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -45,3 +50,31 @@ body {
     );
   }
 }
+
+/* Animated gradient background */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(
+    -45deg,
+    #FFF8DC,
+    #F4E4C1,
+    #E8D5B5,
+    #F5DEB3,
+    #FFF8DC
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+
