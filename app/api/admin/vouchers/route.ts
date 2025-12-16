@@ -8,9 +8,9 @@ async function fetchVouchersFromSheet() {
   if (!GOOGLE_SHEET_URL) {
     // Return default vouchers if no Google Sheet configured
     return [
-      { id: '1', code: 'WELCOME10', discount: 10, type: 'percentage', description: 'First-time customers', active: true },
-      { id: '2', code: 'SAVE20', discount: 20, type: 'percentage', description: 'Orders over $200', active: true },
-      { id: '3', code: 'FREESHIP', discount: 0, type: 'shipping', description: 'Free shipping', active: true },
+      { id: '1', code: 'WELCOME10', discount: 10, type: 'percentage', description: 'First-time customers', active: true, usageLimit: 100, usageCount: 0 },
+      { id: '2', code: 'SAVE20', discount: 20, type: 'percentage', description: 'Orders over $200', active: true, usageLimit: 50, usageCount: 0 },
+      { id: '3', code: 'FREESHIP', discount: 0, type: 'shipping', description: 'Free shipping', active: true, usageLimit: 200, usageCount: 0 },
     ]
   }
 
@@ -28,7 +28,9 @@ async function fetchVouchersFromSheet() {
       discount: parseFloat(row.discount || row.Discount || '0'),
       type: row.type || row.Type || 'percentage',
       description: row.description || row.Description || '',
-      active: row.active === 'true' || row.active === true || row.Active === 'true'
+      active: row.active === 'true' || row.active === true || row.Active === 'true',
+      usageLimit: parseInt(row.usageLimit || row.UsageLimit || '0'),
+      usageCount: parseInt(row.usageCount || row.UsageCount || '0')
     })) : []
     
     return vouchers
@@ -60,6 +62,7 @@ export async function POST(request: NextRequest) {
     const voucher = await request.json()
     voucher.id = Date.now().toString()
     voucher.active = true
+    voucher.usageCount = 0
     
     // Save to Google Sheets
     if (GOOGLE_SHEET_URL) {
@@ -72,7 +75,9 @@ export async function POST(request: NextRequest) {
           discount: voucher.discount.toString(),
           type: voucher.type,
           description: voucher.description,
-          active: voucher.active.toString()
+          active: voucher.active.toString(),
+          usageLimit: voucher.usageLimit?.toString() || '0',
+          usageCount: voucher.usageCount.toString()
         })
         await fetch(`${GOOGLE_SHEET_URL}?${params.toString()}`)
       } catch (sheetError) {
@@ -108,7 +113,9 @@ export async function PUT(request: NextRequest) {
           discount: updatedVoucher.discount.toString(),
           type: updatedVoucher.type,
           description: updatedVoucher.description,
-          active: updatedVoucher.active.toString()
+          active: updatedVoucher.active.toString(),
+          usageLimit: updatedVoucher.usageLimit?.toString() || '0',
+          usageCount: updatedVoucher.usageCount?.toString() || '0'
         })
         await fetch(`${GOOGLE_SHEET_URL}?${params.toString()}`)
       } catch (sheetError) {

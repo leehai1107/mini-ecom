@@ -17,7 +17,8 @@ export async function POST(request: NextRequest) {
 
     // Fetch from admin API (in-memory storage)
     try {
-      const vouchersRes = await fetch('http://localhost:3000/api/admin/vouchers')
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+      const vouchersRes = await fetch(`${baseUrl}/api/admin/vouchers`)
       const vouchersData = await vouchersRes.json()
       
       const voucher = (vouchersData.vouchers || []).find(
@@ -25,6 +26,18 @@ export async function POST(request: NextRequest) {
       )
 
       if (voucher) {
+        // Kiểm tra số lượt sử dụng
+        const usageLimit = voucher.usageLimit || 0
+        const usageCount = voucher.usageCount || 0
+        
+        if (usageLimit > 0 && usageCount >= usageLimit) {
+          return NextResponse.json({
+            success: true,
+            valid: false,
+            message: 'Voucher đã hết lượt sử dụng',
+          })
+        }
+        
         return NextResponse.json({
           success: true,
           valid: true,

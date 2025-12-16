@@ -310,6 +310,9 @@ export default function AdminDashboard() {
                             <span className={`px-4 py-1 rounded-full text-sm font-semibold ${voucher.active ? 'bg-green-100 text-green-800 border-2 border-green-300' : 'bg-gray-100 text-gray-800 border-2 border-gray-300'}`}>
                               {voucher.active ? 'Đang Hoạt Động' : 'Đã Tắt'}
                             </span>
+                            <span className="px-4 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 border-2 border-blue-300">
+                              {voucher.usageCount || 0} / {voucher.usageLimit || '∞'}
+                            </span>
                           </div>
                           <p className="text-wood-dark mb-2 font-medium">{voucher.description}</p>
                           <p className="text-secondary font-bold text-lg">
@@ -666,7 +669,9 @@ function VoucherModal({ voucher, onClose, onSave }: any) {
     discount: 0,
     type: 'percentage',
     description: '',
-    active: true
+    active: true,
+    usageLimit: 0,
+    usageCount: 0
   })
   const [isSaving, setIsSaving] = useState(false)
 
@@ -740,6 +745,22 @@ function VoucherModal({ voucher, onClose, onSave }: any) {
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
               required
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Số lượt sử dụng tối đa</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.usageLimit}
+              onChange={(e) => setFormData({ ...formData, usageLimit: parseInt(e.target.value) || 0 })}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
+              placeholder="0 = không giới hạn"
+            />
+            {voucher && (
+              <p className="text-sm text-gray-600 mt-1">
+                Đã sử dụng: {formData.usageCount || 0} / {formData.usageLimit || '∞'}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <input

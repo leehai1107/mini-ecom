@@ -190,6 +190,36 @@ export async function POST(request: NextRequest) {
     const orderId = `ORD-${Date.now()}`
     const orderWithId = { ...orderData, orderId }
 
+    // Update voucher usage count if voucher was used
+    if (orderData.voucherCode) {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+        const vouchersRes = await fetch(`${baseUrl}/api/admin/vouchers`)
+        const vouchersData = await vouchersRes.json()
+        
+        const voucher = (vouchersData.vouchers || []).find(
+          (v: any) => v.code?.toUpperCase() === orderData.voucherCode?.toUpperCase()
+        )
+        
+        if (voucher) {
+          // Increment usage count
+          const updatedVoucher = {
+            ...voucher,
+            usageCount: (voucher.usageCount || 0) + 1
+          }
+          
+          await fetch(`${baseUrl}/api/admin/vouchers`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedVoucher)
+          })
+        }
+      } catch (voucherError) {
+        console.error('Failed to update voucher usage:', voucherError)
+        // Continue even if voucher update fails
+      }
+    }
+
     // Send emails
     try {
       await Promise.all([

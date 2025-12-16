@@ -35,12 +35,22 @@ export default function VoucherBanner() {
         {vouchers.length === 0 ? (
           <div className="col-span-3 text-center text-accent py-8">Chưa có mã giảm giá nào đang hoạt động</div>
         ) : (
-          vouchers.map((voucher) => (
+          vouchers.map((voucher) => {
+            const remaining = voucher.usageLimit > 0 ? voucher.usageLimit - (voucher.usageCount || 0) : null
+            const isLimited = voucher.usageLimit > 0
+            const isAlmostGone = remaining !== null && remaining <= 10 && remaining > 0
+            
+            return (
             <div key={voucher.code} className="bg-gradient-to-br from-cream/10 to-white/5 backdrop-blur-sm rounded-xl p-6 border-2 border-primary/30 hover:border-primary transition-all hover:scale-105">
               <div className="text-sm text-accent mb-3 font-medium">{voucher.description}</div>
               <div className="text-2xl font-bold mb-4 text-gold">
                 {voucher.type === 'percentage' ? `Giảm ${voucher.discount}%` : voucher.type === 'shipping' ? 'Miễn Phí Vận Chuyển' : `Giảm ${voucher.discount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}`}
               </div>
+              {isLimited && remaining !== null && (
+                <div className={`text-xs mb-3 text-center font-semibold ${isAlmostGone ? 'text-red-300' : 'text-accent'}`}>
+                  {remaining > 0 ? `⏳ Còn ${remaining} lượt` : '❌ Đã hết lượt'}
+                </div>
+              )}
               <div className="flex gap-2">
                 <div className="flex-1 bg-gradient-to-r from-primary to-gold text-dark px-4 py-3 rounded-lg font-mono font-bold text-center shadow-lg">
                   {voucher.code}
@@ -63,7 +73,7 @@ export default function VoucherBanner() {
                 </div>
               )}
             </div>
-          ))
+          )})
         )}
       </div>
     </div>
