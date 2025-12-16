@@ -45,7 +45,7 @@ async function fetchOrdersFromSheet() {
 export async function GET(request: NextRequest) {
   try {
     const orders = await fetchOrdersFromSheet()
-    const sortedOrders = orders.sort((a, b) => {
+    const sortedOrders = orders.sort((a: any, b: any) => {
       const dateA = new Date(a.orderDate).getTime()
       const dateB = new Date(b.orderDate).getTime()
       return dateB - dateA
@@ -61,11 +61,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// Store order (called from order route) - now saves to Google Sheets
-export function storeOrder(order: any) {
-  // This function is called from the order API route
-  // The order is already being saved to Google Sheets in the order route
-  // This is kept for compatibility
 }

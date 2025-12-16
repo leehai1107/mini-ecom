@@ -189,14 +189,6 @@ export async function POST(request: NextRequest) {
     // Store order in admin system
     const orderId = `ORD-${Date.now()}`
     const orderWithId = { ...orderData, orderId }
-    
-    // Save to admin orders
-    try {
-      const { storeOrder } = await import('@/app/api/admin/orders/route')
-      storeOrder(orderWithId)
-    } catch (error) {
-      console.error('Failed to store order:', error)
-    }
 
     // Send emails
     try {
