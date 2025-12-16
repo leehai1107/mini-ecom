@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { ShoppingCart, Star, Images, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import OrderModal from './OrderModal'
@@ -17,11 +17,26 @@ interface Product {
   images?: string[]
 }
 
-export default function ProductShowcase({ products }: { products: Product[] }) {
+export default function ProductShowcase() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [previewProduct, setPreviewProduct] = useState<Product | null>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  useEffect(() => {
+    fetch('/api/admin/products')
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data.products || [])
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error('Failed to fetch products:', err)
+        setLoading(false)
+      })
+  }, [])
 
   const handleOrderClick = (product: Product) => {
     setSelectedProduct(product)
@@ -57,6 +72,23 @@ export default function ProductShowcase({ products }: { products: Product[] }) {
         prev === 0 ? previewProduct.images!.length - 1 : prev - 1
       )
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-16">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+        <p className="mt-4 text-wood-dark">Đang tải sản phẩm...</p>
+      </div>
+    )
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-wood-dark text-lg">Chưa có sản phẩm nào</p>
+      </div>
+    )
   }
 
   return (

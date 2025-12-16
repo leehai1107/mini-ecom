@@ -6,32 +6,7 @@ import Header from '@/components/Header'
 import FadeIn from '@/components/FadeIn'
 import ScrollToTop from '@/components/ScrollToTop'
 
-interface Product {
-  id: string
-  name: string
-  price: number
-  image: string
-  images?: string[] // Multiple images support
-  description: string
-  sellPrice: number
-}
-
-// Fetch products from admin API
-async function getProducts(): Promise<Product[]> {
-  try {
-    const res = await fetch('http://localhost:3000/api/admin/products', {
-      cache: 'no-store'
-    })
-    const data = await res.json()
-    return data.products || []
-  } catch (error) {
-    console.error('Failed to fetch products:', error)
-    return []
-  }
-}
-
 export default async function Home() {
-  const products = await getProducts()
   return (
     <div className="min-h-screen">
       <ScrollToTop />
@@ -77,7 +52,7 @@ export default async function Home() {
               <div className="w-24 h-1 bg-gradient-to-r from-primary via-gold to-primary mx-auto"></div>
             </div>
           </FadeIn>
-          <ProductShowcase products={products} />
+          <ProductShowcase />
         </section>
 
         {/* Features */}
