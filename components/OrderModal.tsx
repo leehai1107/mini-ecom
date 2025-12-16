@@ -153,10 +153,10 @@ export default function OrderModal({ product, isOpen, onClose }: OrderModalProps
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pt-20 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-secondary to-wood-dark text-cream p-6 flex justify-between items-center">
+        <div className="bg-gradient-to-r from-secondary to-wood-dark text-cream p-6 flex justify-between items-center rounded-t-3xl flex-shrink-0">
           <div className="flex items-center gap-3">
             <ShoppingCart className="w-6 h-6" />
             <h2 className="text-2xl font-bold">Đặt Hàng Ngay</h2>
@@ -169,8 +169,8 @@ export default function OrderModal({ product, isOpen, onClose }: OrderModalProps
           </button>
         </div>
 
-        <div className="p-6">
-          {/* Product Info */}
+        {/* Product Info - Fixed */}
+        <div className="p-6 pb-0 flex-shrink-0">
           <div className="flex gap-6 mb-6 pb-6 border-b-2 border-primary/20">
             <div className="relative w-32 h-32 rounded-xl overflow-hidden flex-shrink-0">
               <Image
@@ -200,7 +200,10 @@ export default function OrderModal({ product, isOpen, onClose }: OrderModalProps
               </div>
             </div>
           </div>
+        </div>
 
+        {/* Scrollable Form Area */}
+        <div className="overflow-y-auto flex-1 scrollbar-hide px-6">
           {/* Success/Error Messages */}
           {submitStatus === 'success' && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
@@ -220,7 +223,7 @@ export default function OrderModal({ product, isOpen, onClose }: OrderModalProps
           )}
 
           {/* Order Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 pb-6">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-semibold text-dark mb-2">
