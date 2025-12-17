@@ -169,41 +169,42 @@ export default function OrderModal({ product, isOpen, onClose }: OrderModalProps
           </button>
         </div>
 
-        {/* Product Info - Fixed */}
-        <div className="p-6 pb-0 flex-shrink-0">
-          <div className="flex gap-6 mb-6 pb-6 border-b-2 border-primary/20">
-            <div className="relative w-32 h-32 rounded-xl overflow-hidden flex-shrink-0">
-              <Image
-                src={getGoogleDriveThumbnail(product.image)}
-                alt={product.name}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold text-dark mb-2">{product.name}</h3>
-              <p className="text-wood-dark mb-3 line-clamp-2">{product.description}</p>
-              <div className="flex items-center gap-3">
-                {product.price > product.sellPrice && (
-                  <span className="text-lg text-wood-dark line-through">
-                    {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+        {/* Scrollable Area */}
+        <div className="overflow-y-auto flex-1 scrollbar-hide">
+          {/* Product Info */}
+          <div className="p-4 sm:p-6 pb-0">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 border-primary/20">
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden flex-shrink-0 mx-auto sm:mx-0">
+                <Image
+                  src={getGoogleDriveThumbnail(product.image)}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex-1 text-center sm:text-left">
+                <h3 className="text-xl sm:text-2xl font-bold text-dark mb-2">{product.name}</h3>
+                <p className="text-sm sm:text-base text-wood-dark mb-3 line-clamp-2">{product.description}</p>
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
+                  {product.price > product.sellPrice && (
+                    <span className="text-base sm:text-lg text-wood-dark line-through">
+                      {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                    </span>
+                  )}
+                  <span className="text-2xl sm:text-3xl font-bold text-secondary">
+                    {product.sellPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </span>
-                )}
-                <span className="text-3xl font-bold text-secondary">
-                  {product.sellPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                </span>
-                {product.price > product.sellPrice && (
-                  <span className="bg-red-500 text-white text-sm font-bold px-2 py-1 rounded">
-                    -{Math.round(((product.price - product.sellPrice) / product.price) * 100)}%
-                  </span>
-                )}
+                  {product.price > product.sellPrice && (
+                    <span className="bg-red-500 text-white text-xs sm:text-sm font-bold px-2 py-1 rounded">
+                      -{Math.round(((product.price - product.sellPrice) / product.price) * 100)}%
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Scrollable Form Area */}
-        <div className="overflow-y-auto flex-1 scrollbar-hide px-6">
+          <div className="px-4 sm:px-6">
           {/* Success/Error Messages */}
           {submitStatus === 'success' && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
@@ -296,21 +297,21 @@ export default function OrderModal({ product, isOpen, onClose }: OrderModalProps
                 <Tag className="w-4 h-4" />
                 Mã Giảm Giá
               </label>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
                   id="voucherCode"
                   name="voucherCode"
                   value={formData.voucherCode}
                   onChange={handleInputChange}
-                  className="flex-1 px-4 py-3 border-2 border-primary/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all uppercase"
+                  className="flex-1 px-4 py-3 border-2 border-primary/20 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all uppercase text-sm sm:text-base"
                   placeholder="Nhập mã giảm giá"
                 />
                 <button
                   type="button"
                   onClick={applyVoucher}
                   disabled={isCheckingVoucher}
-                  className="bg-gradient-to-r from-primary to-gold text-dark px-6 py-3 rounded-lg hover:from-gold hover:to-primary transition-all font-semibold flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  className="bg-gradient-to-r from-primary to-gold text-dark px-4 sm:px-6 py-3 rounded-lg hover:from-gold hover:to-primary transition-all font-semibold flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto whitespace-nowrap text-sm sm:text-base"
                 >
                   {isCheckingVoucher ? (
                     <>
@@ -409,6 +410,7 @@ export default function OrderModal({ product, isOpen, onClose }: OrderModalProps
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
     </div>
